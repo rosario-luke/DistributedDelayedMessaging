@@ -5,11 +5,11 @@ import java.util.Scanner;
 
 public class ConfigurationManager {
 
-	static ConfigurationFile createConfig(String file) {
+	static ConfigurationFile createConfig(String file, String commands) {
 		int hostPort = 0;
 		char hostCharacter;
 		ConfigurationFile config;
-		
+
 		File configFile = new File(file);
 		Scanner input = null;
 		try {
@@ -28,7 +28,7 @@ public class ConfigurationManager {
 		hostPort = Integer
 				.parseInt(hostInput.substring(hostInput.indexOf(":") + 1));
 		
-		config = new ConfigurationFile(hostCharacter, hostPort);
+		config = new ConfigurationFile(hostCharacter, hostPort, commands);
 		
 		// System.out.println("Letter-port-delay:Letter-port-delay:Letter-port-delay");
 		

@@ -6,11 +6,13 @@ public class ConfigurationFile{
 	private ArrayList<ServerInfo> myServers;
 	private char hostCharacter;
 	private int hostPort;
+    private String commandFile;
 	
-	public ConfigurationFile(char h, int p){
+	public ConfigurationFile(char h, int p, String c){
 		myServers = new ArrayList<ServerInfo>();
 		hostCharacter = h;
 		hostPort = p;
+        commandFile = c;
 	}
 	
 	public void add(ServerInfo info){
@@ -33,6 +35,9 @@ public class ConfigurationFile{
 		}
 		return null;
 	}
+
+    public String getCommandFile(){ return commandFile;}
+    public boolean hasCommandFile(){ return commandFile != null;}
 	
 	public Iterator<ServerInfo> getServerIterator(){
 		return myServers.iterator();

@@ -17,11 +17,12 @@ public class ServerNode extends Thread {
 
 		try {
 			if(args.length != 1){
-				System.out.println("Args should be 1 string containing the configuration file");
+				System.out.println("Args should be 1 string containing the configuration file and optional command file");
 				System.exit(1);
 
 			}
-			new ServerNode().startServer(args[0]);
+
+			new ServerNode().startServer(args);
 		} catch (Exception e) {
 			System.out.println("I/O failure: " + e.getMessage());
 			e.printStackTrace();
@@ -29,12 +30,14 @@ public class ServerNode extends Thread {
 
 	}
 
-	public void startServer(String file) throws Exception {
+	public void startServer(String[] files) throws Exception {
 
-		
+		String file = files[0];
+        String commands = (files.length == 2) ? files[1] : null; // Set command file if specified
+
 		ServerSocket serverSocket = null;
 		boolean listening = true;
-		ConfigurationFile config = ConfigurationManager.createConfig(file);
+		ConfigurationFile config = ConfigurationManager.createConfig(file, commands);
 		
 		try{
 			
@@ -61,6 +64,7 @@ public class ServerNode extends Thread {
 
 		} catch (IOException e) {
 			System.err.println("Could not listen on port: " + config.getHostPort());
+
 			System.exit(-1);
 		} finally {
             serverSocket.close();
