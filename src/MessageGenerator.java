@@ -7,15 +7,15 @@ import java.util.Random;
 public class MessageGenerator {
     private ConfigurationFile config;
     private Random rand;
-    private HashMap<Character, ServerMessage> lastMessages;
+    private HashMap<Character, DelayedServerMessage> lastMessages;
 
-    public MessageGenerator(ConfigurationFile c, Random r, HashMap<Character, ServerMessage> hm){
+    public MessageGenerator(ConfigurationFile c, Random r, HashMap<Character, DelayedServerMessage> hm){
         config = c;
         rand = r;
         lastMessages = hm;
     }
-    public ServerMessage GenerateMessageFromCommand(String inputLine){
-        ServerMessage nMessage;
+    public DelayedServerMessage GenerateMessageFromCommand(String inputLine){
+        DelayedServerMessage nMessage;
         // Split up input to get destination
         String[] splitMessage = inputLine.split(" ");
         String message = splitMessage[1];
@@ -37,21 +37,21 @@ public class MessageGenerator {
         // just generated
         // If the last message still hasn't sent, then we will take
         // the max of the two delays
-        ServerMessage lastMessage = lastMessages.get(desInfo
+        DelayedServerMessage lastMessage = lastMessages.get(desInfo
                 .getIdentifier());
         if (lastMessage == null || lastMessage.getDelay(TimeUnit.MILLISECONDS) < 0) {
-            nMessage = new ServerMessage(desInfo, message,
+            nMessage = new DelayedServerMessage(desInfo, message,
                     randDelay);
             lastMessages.put(desInfo.getIdentifier(), nMessage);
         } else {
             if (lastMessage.getDelay(TimeUnit.MILLISECONDS) > randDelay) {
-                nMessage = new ServerMessage(
+                nMessage = new DelayedServerMessage(
                         desInfo,
                         message,
                         lastMessage.getDelay(TimeUnit.MILLISECONDS) + 100);
                 lastMessages.put(desInfo.getIdentifier(), nMessage);
             } else {
-                nMessage = new ServerMessage(desInfo, message,
+                nMessage = new DelayedServerMessage(desInfo, message,
                         randDelay);
                 lastMessages.put(desInfo.getIdentifier(), nMessage);
             }

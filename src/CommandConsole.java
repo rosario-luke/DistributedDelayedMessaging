@@ -8,17 +8,17 @@ import java.util.concurrent.TimeUnit;
 
 public class CommandConsole implements Runnable {
 
-		private DelayQueue<ServerMessage> delayQueue;
+		private DelayQueue<DelayedServerMessage> delayQueue;
 		private ConfigurationFile config;
-		private HashMap<Character, ServerMessage> lastMessages;
+		private HashMap<Character, DelayedServerMessage> lastMessages;
 		private String threadName;
 		private Thread t;
         private MessageGenerator generator;
         private Random rand;
-		public CommandConsole(DelayQueue<ServerMessage> dq, ConfigurationFile con, String name) {
+		public CommandConsole(DelayQueue<DelayedServerMessage> dq, ConfigurationFile con, String name) {
 			delayQueue = dq;
 			config = con;
-			lastMessages = new HashMap<Character, ServerMessage>();
+			lastMessages = new HashMap<Character, DelayedServerMessage>();
 			Iterator<ServerInfo> it = config.getServerIterator();
 			while (it.hasNext()) {
 				ServerInfo cur = it.next();
@@ -42,7 +42,7 @@ public class CommandConsole implements Runnable {
 
                     while (_input.hasNext()) {
                         inputLine = _input.nextLine();
-                        ServerMessage nMessage = generator.GenerateMessageFromCommand(inputLine);
+                        DelayedServerMessage nMessage = generator.GenerateMessageFromCommand(inputLine);
 
                         delayQueue.add(nMessage);
                         System.out.println("Sent '" + nMessage.getMessage() + "' to " + nMessage.getServerInfo().getIdentifier() +", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
@@ -54,7 +54,7 @@ public class CommandConsole implements Runnable {
 				// Start asking for commands
 				while (!((inputLine = _input.nextLine()).equals("exit"))) {
 
-					ServerMessage nMessage = generator.GenerateMessageFromCommand(inputLine);
+					DelayedServerMessage nMessage = generator.GenerateMessageFromCommand(inputLine);
 					
 					delayQueue.add(nMessage);
 					System.out.println("Sent '" + nMessage.getMessage() + "' to " + nMessage.getServerInfo().getIdentifier() +", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));

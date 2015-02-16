@@ -43,7 +43,7 @@ public class ServerNode extends Thread {
 			
 			
 			
-			DelayQueue<ServerMessage> dq = new DelayQueue<ServerMessage>();
+			DelayQueue<DelayedServerMessage> dq = new DelayQueue<DelayedServerMessage>();
 
 			// Setup CommandConsole and run
 			CommandConsole commandConsole = new CommandConsole(dq, config, "CommandConsole");

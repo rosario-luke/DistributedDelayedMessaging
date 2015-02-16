@@ -7,14 +7,14 @@ import java.util.concurrent.DelayQueue;
 
 public class ClientNode implements Runnable {
 
-		private DelayQueue<ServerMessage> delayQueue;
+		private DelayQueue<DelayedServerMessage> delayQueue;
 		private ConfigurationFile config;
 		private Boolean running;
 		private String threadName;
 		private Thread t;
 		
 
-		public ClientNode(DelayQueue<ServerMessage> dq, ConfigurationFile con, String name) {
+		public ClientNode(DelayQueue<DelayedServerMessage> dq, ConfigurationFile con, String name) {
 			delayQueue = dq;
 			config = con;
 			running = true;
@@ -30,7 +30,7 @@ public class ClientNode implements Runnable {
 			InetAddress host = null;
 			
 			System.out.println("ClientNode running");
-            ServerMessage message = null;
+            DelayedServerMessage message = null;
 
             while (running) {
 
