@@ -4,10 +4,10 @@ import java.util.concurrent.TimeUnit;
 public class DelayedServerMessage implements Delayed {
 
 	private ServerInfo serverInfo;
-	private String message;
+	private Command message;
 	private long startTime;
 
-	public DelayedServerMessage(ServerInfo si, String m, long delay) {
+	public DelayedServerMessage(ServerInfo si, Command m, long delay) {
 		serverInfo = si;
 		message = m;
 		startTime = System.currentTimeMillis() + delay;
@@ -18,7 +18,7 @@ public class DelayedServerMessage implements Delayed {
 		return serverInfo;
 	}
 
-	public String getMessage() {
+	public Command getMessage() {
 		return message;
 	}
 

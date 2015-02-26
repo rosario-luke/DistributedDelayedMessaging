@@ -1,8 +1,5 @@
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -42,11 +39,11 @@ public class CommandConsole implements Runnable {
 
                     while (_input.hasNext()) {
                         inputLine = _input.nextLine();
-                        DelayedServerMessage nMessage = generator.GenerateMessageFromCommand(inputLine);
-
-                        delayQueue.add(nMessage);
-                        System.out.println("Sent '" + nMessage.getMessage() + "' to " + nMessage.getServerInfo().getIdentifier() +", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
-
+                        ArrayList<DelayedServerMessage> mList = generator.GenerateMessageFromCommand(inputLine);
+                        for(DelayedServerMessage nMessage : mList) {
+                            delayQueue.add(nMessage);
+                            System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                        }
                     }
                     _input.close();
                 }
@@ -54,10 +51,11 @@ public class CommandConsole implements Runnable {
 				// Start asking for commands
 				while (!((inputLine = _input.nextLine()).equals("exit"))) {
 
-					DelayedServerMessage nMessage = generator.GenerateMessageFromCommand(inputLine);
-					
-					delayQueue.add(nMessage);
-					System.out.println("Sent '" + nMessage.getMessage() + "' to " + nMessage.getServerInfo().getIdentifier() +", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                    ArrayList<DelayedServerMessage> mList = generator.GenerateMessageFromCommand(inputLine);
+                    for(DelayedServerMessage nMessage : mList) {
+                        delayQueue.add(nMessage);
+                        System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                    }
 					
 				}
 

@@ -27,6 +27,19 @@ public class Command {
         model = m;
     }
 
+    public Command(String encoded){
+        encoded = encoded.substring(encoded.indexOf(":") + 1);
+        String[] s = encoded.split(",");
+        origin = s[0].charAt(9);
+        type = Integer.parseInt(s[1].substring(5));
+        key = Integer.parseInt(s[2].substring(4));
+        value = Integer.parseInt(s[3].substring(6));
+        model = Integer.parseInt(s[4].substring(6));
+
+    }
+
+
+
     public String toString(){
         return "Command:origin="+ origin + ",type=" + type + ",key=" + key + ",value=" + value + ",model=" + model;
     }
