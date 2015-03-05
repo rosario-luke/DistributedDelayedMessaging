@@ -39,8 +39,6 @@ public class SequencerNode extends Thread {
         boolean listening = true;
         ConfigurationFile config = ConfigurationManager.createConfig(file, commands);
 
-        try {
-
 
             DelayQueue<DelayedServerMessage> dq = new DelayQueue<DelayedServerMessage>();
 
@@ -61,25 +59,33 @@ public class SequencerNode extends Thread {
 
             serverSocket = new ServerSocket(config.getHostPort());
             serverSocket.setReuseAddress(true);
-            System.out.println("Server now listening on port" + config.getHostPort());
+            System.out.println("Server now listening on port " + config.getHostPort());
             while (listening) {
-                handleServerRequest(serverSocket, config, generator, dq);
+                Socket clientSocket = null;
+                try {
+                    clientSocket = serverSocket.accept();
+                } catch (IOException e) {
+                    if(listening) {
+                        System.out.println("Server Stopped.") ;
+                        return;
+                    }
+                    throw new RuntimeException(
+                            "Error accepting client connection", e);
+                }
+
+                new Thread(
+                        new SequencerThread(clientSocket, config, generator, dq)
+                ).start();
             }
 
 
-        } catch (IOException e) {
-            System.err.println("Could not listen on port: " + config.getHostPort());
 
-            System.exit(-1);
-        } finally {
-            serverSocket.close();
-
-        }
 
     }
 
     private void handleServerRequest(ServerSocket serverSocket, ConfigurationFile con, MessageGenerator g, DelayQueue<DelayedServerMessage> q) {
         try {
+            System.out.println("Waiting to accept");
             Socket socket = serverSocket.accept();
             BufferedReader _in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String fullMessage = _in.readLine();
