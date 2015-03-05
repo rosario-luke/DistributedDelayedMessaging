@@ -121,6 +121,9 @@ public class MessageGenerator {
                      lastMessages.put(desInfo.getIdentifier(), nMessage);
                  }
              }
+             if(nMessage.getMessage().getModel() == Command.SEQUENTIALLY_CONSISTENT_MODEL && nMessage.getMessage().getType() == Command.GET_COMMAND){
+                 nMessage.setReadSeq(true);
+             }
              dList.add(nMessage);
          }
         return dList;

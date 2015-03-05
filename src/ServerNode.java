@@ -13,6 +13,8 @@ import java.io.*;
 
 public class ServerNode extends Thread {
 
+    private HashMap<Integer, ServerValue> myTable;
+
 	public static void main(String[] args) {
 
 		try {
@@ -34,7 +36,7 @@ public class ServerNode extends Thread {
 
 		String file = files[0];
         String commands = (files.length == 2) ? files[1] : null; // Set command file if specified
-
+        myTable = new HashMap<Integer, ServerValue>();
 		ServerSocket serverSocket = null;
 		boolean listening = true;
 		ConfigurationFile config = ConfigurationManager.createConfig(file, commands);
@@ -46,7 +48,7 @@ public class ServerNode extends Thread {
 			DelayQueue<DelayedServerMessage> dq = new DelayQueue<DelayedServerMessage>();
 
 			// Setup CommandConsole and run
-			CommandConsole commandConsole = new CommandConsole(dq, config, "CommandConsole");
+			CommandConsole commandConsole = new CommandConsole(dq, config, "CommandConsole", myTable);
 			commandConsole.start();
 			
 			// Setup clientNode and run

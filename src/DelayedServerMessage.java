@@ -6,11 +6,13 @@ public class DelayedServerMessage implements Delayed {
 	private ServerInfo serverInfo;
 	private Command message;
 	private long startTime;
+    private boolean isReadSeq;
 
 	public DelayedServerMessage(ServerInfo si, Command m, long delay) {
 		serverInfo = si;
 		message = m;
 		startTime = System.currentTimeMillis() + delay;
+        isReadSeq = false;
 
 	}
 
@@ -39,4 +41,12 @@ public class DelayedServerMessage implements Delayed {
 		return unit.convert(diff, TimeUnit.MILLISECONDS);
 
 	}
+
+    public void setReadSeq(boolean b){
+        isReadSeq = b;
+    }
+
+    public boolean isReadSeq(){
+        return isReadSeq;
+    }
 }

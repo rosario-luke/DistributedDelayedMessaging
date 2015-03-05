@@ -8,12 +8,13 @@ public class CommandConsole implements Runnable {
     private DelayQueue<DelayedServerMessage> delayQueue;
     private ConfigurationFile config;
     private HashMap<Character, DelayedServerMessage> lastMessages;
+    private HashMap<Integer, ServerValue> myTable;
     private String threadName;
     private Thread t;
     private MessageGenerator generator;
     private Random rand;
 
-    public CommandConsole(DelayQueue<DelayedServerMessage> dq, ConfigurationFile con, String name) {
+    public CommandConsole(DelayQueue<DelayedServerMessage> dq, ConfigurationFile con, String name, HashMap<Integer, ServerValue> map) {
         delayQueue = dq;
         config = con;
         lastMessages = new HashMap<Character, DelayedServerMessage>();
@@ -25,6 +26,7 @@ public class CommandConsole implements Runnable {
         rand = new Random();
         generator = new MessageGenerator(config, rand, lastMessages);
         threadName = name;
+        myTable = map;
     }
 
     public void run() {
@@ -45,9 +47,19 @@ public class CommandConsole implements Runnable {
                 while (_input.hasNext()) {
                     inputLine = _input.nextLine();
                     ArrayList<DelayedServerMessage> mList = generator.GenerateMessageFromCommandString(inputLine);
-                    for (DelayedServerMessage nMessage : mList) {
-                        delayQueue.add(nMessage);
-                        System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                    if(mList.size() == 1 && mList.get(0).isReadSeq()){
+                        // IF THE COMMAND IS READ AND MODEL IS SEQUENTIALLY CONSISTENT, DON'T TOTAL BROADCAST, JUST OUTPUT VALUE
+                        Command c = mList.get(0).getMessage();
+                        if(myTable.get(c.getKey()) != null) {
+                            System.out.println("get(" + c.getKey() + ") = " + myTable.get(c.getKey()).getValue());
+                        } else {
+                            System.out.println("get(" + c.getKey() + ") occurred but value did not exist");
+                        }
+                    } else {
+                        for (DelayedServerMessage nMessage : mList) {
+                            delayQueue.add(nMessage);
+                            System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                        }
                     }
                 }
                 _input.close();
@@ -59,9 +71,19 @@ public class CommandConsole implements Runnable {
             while (!((inputLine = _input.nextLine()).equals("exit"))) {
 
                 ArrayList<DelayedServerMessage> mList = generator.GenerateMessageFromCommandString(inputLine);
-                for (DelayedServerMessage nMessage : mList) {
-                    delayQueue.add(nMessage);
-                    System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                if(mList.size() == 1 && mList.get(0).isReadSeq()){
+                    // IF THE COMMAND IS READ AND MODEL IS SEQUENTIALLY CONSISTENT, DON'T TOTAL BROADCAST, JUST OUTPUT VALUE
+                    Command c = mList.get(0).getMessage();
+                    if(myTable.get(c.getKey()) != null) {
+                        System.out.println("get(" + c.getKey() + ") = " + myTable.get(c.getKey()).getValue());
+                    } else {
+                        System.out.println("get(" + c.getKey() + ") occurred but value did not exist");
+                    }
+                } else {
+                    for (DelayedServerMessage nMessage : mList) {
+                        delayQueue.add(nMessage);
+                        System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                    }
                 }
 
             }
