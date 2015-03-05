@@ -1,0 +1,7 @@
+insert 10 10 1
+update 10 5 1
+get 10 1
+insert 6 1 1
+insert 1 1 1
+get 6 1
+get 1 1

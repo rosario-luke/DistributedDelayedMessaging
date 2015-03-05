@@ -19,7 +19,7 @@ public class ServerNode extends Thread {
 	public static void main(String[] args) {
 
 		try {
-			if(args.length != 1){
+			if(args.length != 1 && args.length != 2){
 				System.out.println("Args should be 1 string containing the configuration file and optional command file");
 				System.exit(1);
 
@@ -100,7 +100,7 @@ public class ServerNode extends Thread {
                         switch(command.getType()){
                             case Command.GET_COMMAND:
                                 if(command.getModel() == Command.LINEARIZABLE_MODEL && command.getOrigin() == config.getHostIdentifier()){ // IF THE COMMAND IF FROM MYSELF AND LINEARIZABLE
-                                    System.out.println("get(" + command.getKey() + ") = " + myTable.get(command).getValue());
+                                    System.out.println("get(" + command.getKey() + ") = " + myTable.get(command.getKey()).getValue());
                                 }
                                 break;
                             case Command.DELETE_COMMAND:
