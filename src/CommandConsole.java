@@ -13,8 +13,9 @@ public class CommandConsole implements Runnable {
     private Thread t;
     private MessageGenerator generator;
     private Random rand;
+    private HashMap<Command, CommandResponse> myCommands;
 
-    public CommandConsole(DelayQueue<DelayedServerMessage> dq, ConfigurationFile con, String name, HashMap<Integer, ServerValue> map) {
+    public CommandConsole(DelayQueue<DelayedServerMessage> dq, ConfigurationFile con, String name, HashMap<Integer, ServerValue> map,HashMap<Command, CommandResponse> mC ) {
         delayQueue = dq;
         config = con;
         lastMessages = new HashMap<Character, DelayedServerMessage>();
@@ -27,6 +28,7 @@ public class CommandConsole implements Runnable {
         generator = new MessageGenerator(config, rand, lastMessages);
         threadName = name;
         myTable = map;
+        myCommands = mC;
     }
 
     public void run() {
@@ -56,11 +58,14 @@ public class CommandConsole implements Runnable {
                             System.out.println("get(" + c.getKey() + ") occurred but value did not exist");
                         }
                     } else {
+                        Command c = mList.get(0).getMessage();
+                        myCommands.put(c, new CommandResponse(c));
                         for (DelayedServerMessage nMessage : mList) {
                             delayQueue.add(nMessage);
                             System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
                         }
                     }
+                    myCommands.get(mList.get(0).getMessage()).waitForResponses();
                 }
                 _input.close();
             }

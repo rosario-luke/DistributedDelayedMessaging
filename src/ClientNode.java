@@ -55,7 +55,7 @@ public class ClientNode implements Runnable {
                     socket = new Socket(host.getHostName(), message.getServerInfo().getPortNumber());
                     // Attach socket to reader
                     out = new PrintWriter(socket.getOutputStream(), true);
-                    out.println(message.getMessage() + "::" + config.getHostIdentifier());
+                    out.println(message.getMessage() + "::" + System.currentTimeMillis());
                 }catch (IOException e) {
                     System.err.println("Couldn't write to connection " + message.getServerInfo().getIdentifier()
                             + " " + e.getMessage());

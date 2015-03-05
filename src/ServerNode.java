@@ -14,7 +14,8 @@ import java.io.*;
 public class ServerNode extends Thread {
 
     private HashMap<Integer, ServerValue> myTable;
-
+    private ConfigurationFile config;
+    private HashMap<Command, CommandResponse> myCommands;
 	public static void main(String[] args) {
 
 		try {
@@ -37,9 +38,10 @@ public class ServerNode extends Thread {
 		String file = files[0];
         String commands = (files.length == 2) ? files[1] : null; // Set command file if specified
         myTable = new HashMap<Integer, ServerValue>();
+        myCommands = new HashMap<Command, CommandResponse>();
 		ServerSocket serverSocket = null;
 		boolean listening = true;
-		ConfigurationFile config = ConfigurationManager.createConfig(file, commands);
+		config = ConfigurationManager.createConfig(file, commands);
 		
 		try{
 			
@@ -48,7 +50,7 @@ public class ServerNode extends Thread {
 			DelayQueue<DelayedServerMessage> dq = new DelayQueue<DelayedServerMessage>();
 
 			// Setup CommandConsole and run
-			CommandConsole commandConsole = new CommandConsole(dq, config, "CommandConsole", myTable);
+			CommandConsole commandConsole = new CommandConsole(dq, config, "CommandConsole", myTable, myCommands);
 			commandConsole.start();
 			
 			// Setup clientNode and run
@@ -59,7 +61,7 @@ public class ServerNode extends Thread {
             serverSocket.setReuseAddress(true);
 			System.out.println("Server now listening on port" + config.getHostPort());
 			while (listening) {
-				handleServerRequest(serverSocket, config);
+				handleServerRequest(serverSocket);
 			}
 	 
 
@@ -75,15 +77,23 @@ public class ServerNode extends Thread {
 
 	}
 	
-	private void handleServerRequest(ServerSocket serverSocket, ConfigurationFile con) {
+	private void handleServerRequest(ServerSocket serverSocket) {
 		try {
 			Socket socket = serverSocket.accept();
 			BufferedReader _in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			String fullMessage = _in.readLine();
-			String message = fullMessage.split("::")[0];
-			char sender = fullMessage.charAt(fullMessage.length()-1);
-			int maxDelay = con.findInfoByIdentifier(sender).getPortDelay();
-			System.out.println("Received '" + message +"' from " + sender + ", Max delay is " + maxDelay + " s, system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+            String fullMessage = _in.readLine();
+            if(fullMessage.startsWith("Command")){ // WE ARE RECIEVING A COMMAND
+                Command command = new Command(fullMessage.split("::")[0]);
+                long timestamp = Long.parseLong(fullMessage.split("::")[1]);
+                if(command.getOrigin() == config.getHostIdentifier()){ // THE COMMAND IS FROM MYSELF
+
+                } else{ // THE COMMAND IS COMING FROM ANOTHER NODE
+
+                }
+
+            } else { // WE ARE RECIEVING A RESPONSE/ACKNOWLEDGEMENT
+
+            }
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
