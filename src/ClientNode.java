@@ -29,7 +29,7 @@ public class ClientNode implements Runnable {
 			
 			InetAddress host = null;
 			
-			System.out.println("ClientNode running");
+			//System.out.println("ClientNode running");
             DelayedServerMessage message = null;
 
             while (running) {

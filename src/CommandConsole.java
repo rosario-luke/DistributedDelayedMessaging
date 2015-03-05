@@ -30,16 +30,20 @@ public class CommandConsole implements Runnable {
 			Scanner _input = null;
 			String inputLine;
 
-			System.out.println("Command console running");
+			System.out.println("Press enter to start sending commands");
+            _input = new Scanner(System.in);
+            _input.nextLine();
+
 			try {
 
 				if(config.hasCommandFile()){
+                    System.out.println("Sending commands from file");
                     File cf = new File(config.getCommandFile());
                     _input = new Scanner(cf);
 
                     while (_input.hasNext()) {
                         inputLine = _input.nextLine();
-                        ArrayList<DelayedServerMessage> mList = generator.GenerateMessageFromCommand(inputLine);
+                        ArrayList<DelayedServerMessage> mList = generator.GenerateMessageFromCommandString(inputLine);
                         for(DelayedServerMessage nMessage : mList) {
                             delayQueue.add(nMessage);
                             System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
@@ -49,15 +53,20 @@ public class CommandConsole implements Runnable {
                 }
                 _input = new Scanner(System.in);
 				// Start asking for commands
-				while (!((inputLine = _input.nextLine()).equals("exit"))) {
+                System.out.println("Please enter commands now");
+                while(true) {
 
-                    ArrayList<DelayedServerMessage> mList = generator.GenerateMessageFromCommand(inputLine);
-                    for(DelayedServerMessage nMessage : mList) {
-                        delayQueue.add(nMessage);
-                        System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                    inputLine = _input.nextLine();
+                    while (!(inputLine.equals("exit"))) {
+
+                        ArrayList<DelayedServerMessage> mList = generator.GenerateMessageFromCommandString(inputLine);
+                        for (DelayedServerMessage nMessage : mList) {
+                            delayQueue.add(nMessage);
+                            System.out.println("Sent '" + nMessage.getMessage().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                        }
+
                     }
-					
-				}
+                }
 
 			} catch (Exception e) {
 				System.err.print("Caught error " + e.getMessage());
@@ -68,7 +77,7 @@ public class CommandConsole implements Runnable {
 		}
 		
 		public void start(){
-			System.out.println("Starting" + threadName);
+
 			if(t == null){
 				t = new Thread(this, threadName);
 			}
