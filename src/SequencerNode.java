@@ -89,12 +89,12 @@ public class SequencerNode extends Thread {
             Socket socket = serverSocket.accept();
             BufferedReader _in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String fullMessage = _in.readLine();
-            String message = fullMessage.split("::")[0];
-            char sender = fullMessage.charAt(fullMessage.length() - 1);
-            int maxDelay = con.findInfoByIdentifier(sender).getPortDelay();
-            System.out.println("Received '" + message + "' from " + sender + ", Max delay is " + maxDelay + " s, system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
-            Command c = new Command(message);
-            ArrayList<DelayedServerMessage> messages = g.GenerateMessageFromCommand(c);
+            Command command = new Command(fullMessage.split("::")[0]);
+            long timestamp = Long.parseLong(fullMessage.split("::")[1]);
+            int maxDelay = con.findInfoByIdentifier(command.getOrigin()).getPortDelay();
+            System.out.println("Received '" + command.toString() + "' from " + command.getOrigin() + ", Max delay is " + maxDelay + " s, system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+
+            ArrayList<DelayedServerMessage> messages = g.GenerateMessageFromCommand(command);
             q.addAll(messages);
         } catch (IOException e) {
             e.printStackTrace();

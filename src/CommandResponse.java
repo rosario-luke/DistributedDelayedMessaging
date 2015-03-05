@@ -8,9 +8,10 @@ public class CommandResponse {
     private ArrayList<Response> responseList;
     private int responsesNeeded;
     private Object cv;
-
+    private Command command;
     public CommandResponse(Command c){
         responseList = new ArrayList<Response>();
+        command = c;
         cv = new Object();
         switch(c.getModel()){
             case Command.LINEARIZABLE_MODEL:
@@ -44,6 +45,14 @@ public class CommandResponse {
                 cv.wait();
             }catch(InterruptedException e){
                 System.out.println("Error waiting for responses");
+            }
+        }
+    }
+
+    public void recieveCommandFromMyself(){
+        if(command.isLinearOrSequential()) {
+            synchronized (cv) {
+                cv.notify();
             }
         }
     }

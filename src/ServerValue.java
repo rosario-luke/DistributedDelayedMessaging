@@ -5,7 +5,7 @@ public class ServerValue {
     private int value;
     private long timestamp;
 
-    public ServerValue(int v, int t){
+    public ServerValue(int v, long t){
         value = v;
         timestamp = t;
     }

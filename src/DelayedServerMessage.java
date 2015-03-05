@@ -4,25 +4,34 @@ import java.util.concurrent.TimeUnit;
 public class DelayedServerMessage implements Delayed {
 
 	private ServerInfo serverInfo;
-	private Command message;
+	private Command command;
 	private long startTime;
     private boolean isReadSeq;
+    private Response response;
 
 	public DelayedServerMessage(ServerInfo si, Command m, long delay) {
 		serverInfo = si;
-		message = m;
+		command = m;
 		startTime = System.currentTimeMillis() + delay;
         isReadSeq = false;
-
+        response = null;
 	}
 
 	public ServerInfo getServerInfo() {
 		return serverInfo;
 	}
 
-	public Command getMessage() {
-		return message;
+	public Command getCommand() {
+		return command;
 	}
+
+    public String getMessage(){
+        if(response == null){
+            return command.toString();
+        } else {
+            return response.toString() + "::" + command.toString();
+        }
+    }
 
 	@Override
 	public int compareTo(Delayed o) {

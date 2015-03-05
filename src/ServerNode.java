@@ -1,21 +1,21 @@
 import java.net.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
-import java.util.concurrent.TimeUnit;
 import java.io.*;
 
 
 
 public class ServerNode extends Thread {
 
-    private HashMap<Integer, ServerValue> myTable;
+    private ConcurrentHashMap<Integer, ServerValue> myTable;
     private ConfigurationFile config;
-    private HashMap<Command, CommandResponse> myCommands;
+    private ConcurrentHashMap<Command, CommandResponse> myCommands;
+    private MessageGenerator generator;
+    private HashMap<Character, DelayedServerMessage> lastMessages;
+    private Random rand;
 	public static void main(String[] args) {
 
 		try {
@@ -37,8 +37,9 @@ public class ServerNode extends Thread {
 
 		String file = files[0];
         String commands = (files.length == 2) ? files[1] : null; // Set command file if specified
-        myTable = new HashMap<Integer, ServerValue>();
-        myCommands = new HashMap<Command, CommandResponse>();
+        myTable = new ConcurrentHashMap<Integer, ServerValue>();
+        myCommands = new ConcurrentHashMap<Command, CommandResponse>();
+        lastMessages = new HashMap<Character, DelayedServerMessage>();
 		ServerSocket serverSocket = null;
 		boolean listening = true;
 		config = ConfigurationManager.createConfig(file, commands);
@@ -49,8 +50,17 @@ public class ServerNode extends Thread {
 			
 			DelayQueue<DelayedServerMessage> dq = new DelayQueue<DelayedServerMessage>();
 
+
+            Iterator<ServerInfo> it = config.getServerIterator();
+            while (it.hasNext()) {
+                ServerInfo cur = it.next();
+                lastMessages.put(cur.getIdentifier(), null);
+            }
+            rand = new Random();
+            generator = new MessageGenerator(config, rand, lastMessages);
+
 			// Setup CommandConsole and run
-			CommandConsole commandConsole = new CommandConsole(dq, config, "CommandConsole", myTable, myCommands);
+			CommandConsole commandConsole = new CommandConsole(dq, config, "CommandConsole", myTable, myCommands, generator);
 			commandConsole.start();
 			
 			// Setup clientNode and run
@@ -85,11 +95,44 @@ public class ServerNode extends Thread {
             if(fullMessage.startsWith("Command")){ // WE ARE RECIEVING A COMMAND
                 Command command = new Command(fullMessage.split("::")[0]);
                 long timestamp = Long.parseLong(fullMessage.split("::")[1]);
-                if(command.getOrigin() == config.getHostIdentifier()){ // THE COMMAND IS FROM MYSELF
 
-                } else{ // THE COMMAND IS COMING FROM ANOTHER NODE
+                    if(command.isLinearOrSequential()){
+                        switch(command.getType()){
+                            case Command.GET_COMMAND:
+                                if(command.getModel() == Command.LINEARIZABLE_MODEL && command.getOrigin() == config.getHostIdentifier()){ // IF THE COMMAND IF FROM MYSELF AND LINEARIZABLE
+                                    System.out.println("get(" + command.getKey() + ") = " + myTable.get(command).getValue());
+                                }
+                                break;
+                            case Command.DELETE_COMMAND:
+                                myTable.remove(command.getKey());
+                                System.out.println("Key " + command.getKey() + " deleted");
+                                break;
+                            case Command.INSERT_COMMAND:
+                                myTable.put(command.getKey(), new ServerValue(command.getValue(), timestamp));
+                                System.out.println("Inserted key" + command.getKey());
+                                break;
+                            case Command.UPDATE_COMMAND:
+                                ServerValue sv = myTable.get(command.getKey());
+                                myTable.put(command.getKey(), new ServerValue(command.getValue(), timestamp));
+                                if(sv != null){
+                                    System.out.println("Key " + command.getKey() + " changed from " + sv.getValue() + " to " + command.getValue());
+                                } else {
+                                    System.out.println("Inserted key" + command.getKey());
+                                }
+                        }
+                        if(command.getOrigin() == config.getHostIdentifier()) { // IF THE COMMAND IS FROM MYSELF NOTIFY SO THAT COMMANDS CONTINUE TO EXECUTE
+                            //myCommands.get(command).recieveCommandFromMyself();
+                            CommandResponse cr = myCommands.get(command);
+                            if(cr == null){
+                                System.out.println("cr was null");
+                            } else {
+                                cr.recieveCommandFromMyself();
+                            }
+                        }
+                    } else {
 
-                }
+                    }
+
 
             } else { // WE ARE RECIEVING A RESPONSE/ACKNOWLEDGEMENT
 
@@ -99,8 +142,5 @@ public class ServerNode extends Thread {
 		}
 	}
 
-	
-
-	
 
 }

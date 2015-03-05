@@ -63,4 +63,25 @@ public class Command {
     public int getModel() {
         return model;
     }
+
+    boolean isLinearOrSequential() {
+        return getModel() == SEQUENTIALLY_CONSISTENT_MODEL || getModel() == LINEARIZABLE_MODEL;
+    }
+
+    @Override
+    public boolean equals(Object eq){
+        if(eq == null){ return false;}
+        return this.toString().equals(eq.toString());
+    }
+
+    @Override
+    public int hashCode(){
+        int hash = 19;
+        hash = 89*hash + (key);
+        hash = 89*hash + (value);
+        hash = 89*hash + (model);
+        hash = 89*hash + (origin);
+        hash = 89*hash + (type);
+        return hash;
+    }
 }

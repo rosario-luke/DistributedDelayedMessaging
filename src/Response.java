@@ -7,6 +7,7 @@ public class Response {
     private int value;
     private long timestamp;
 
+
     public Response(char o, int v, long t){
         origin = o;
         value = v;
