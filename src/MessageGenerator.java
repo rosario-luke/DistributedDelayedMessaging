@@ -24,15 +24,15 @@ public class MessageGenerator {
         String[] s = inputLine.split(" ");
         Command c = null;
         String type = s[0];
-
+        long uniq = System.currentTimeMillis();
         if (s[0].equals("delete")) {
-            c = new Command(config.getHostIdentifier(), 1, Integer.parseInt(s[1]), 0, 0);
+            c = new Command(config.getHostIdentifier(), 1, Integer.parseInt(s[1]), 0, 0, uniq);
         } else if (s[0].equals("get")) {
-            c = new Command(config.getHostIdentifier(), 2, Integer.parseInt(s[1]), 0, Integer.parseInt(s[2]));
+            c = new Command(config.getHostIdentifier(), 2, Integer.parseInt(s[1]), 0, Integer.parseInt(s[2]), uniq);
         } else if (s[0].equals("insert")) {
-            c = new Command(config.getHostIdentifier(), 3, Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]));
+            c = new Command(config.getHostIdentifier(), 3, Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]), uniq);
         } else if (s[0].equals("update")) {
-            c = new Command(config.getHostIdentifier(), 4, Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]));
+            c = new Command(config.getHostIdentifier(), 4, Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]), uniq);
         }
 
         //String message = splitMessage[1];

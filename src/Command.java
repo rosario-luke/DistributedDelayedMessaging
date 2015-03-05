@@ -18,13 +18,15 @@ public class Command {
     private int key;
     private int value;
     private int model;
+    private int uniq;
 
-    public Command(char o, int t, int k, int v, int m){
+    public Command(char o, int t, int k, int v, int m, long u){
         origin = o;
         type = t;
         key = k;
         value = v;
         model = m;
+        uniq = Integer.parseInt(Long.toString(u).substring(Long.toString(u).length()-4));
     }
 
     public Command(String encoded){
@@ -35,13 +37,14 @@ public class Command {
         key = Integer.parseInt(s[2].substring(4));
         value = Integer.parseInt(s[3].substring(6));
         model = Integer.parseInt(s[4].substring(6));
+        uniq = Integer.parseInt(s[5].substring(5));
 
     }
 
 
 
     public String toString(){
-        return "Command:origin="+ origin + ",type=" + type + ",key=" + key + ",value=" + value + ",model=" + model;
+        return "Command:origin="+ origin + ",type=" + type + ",key=" + key + ",value=" + value + ",model=" + model + ",uniq=" + uniq;
     }
 
     public char getOrigin() {
@@ -82,6 +85,7 @@ public class Command {
         hash = 89*hash + (model);
         hash = 89*hash + (origin);
         hash = 89*hash + (type);
+        hash = 89*hash + (uniq);
         return hash;
     }
 }
