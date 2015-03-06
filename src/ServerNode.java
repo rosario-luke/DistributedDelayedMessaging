@@ -119,6 +119,7 @@ public class ServerNode extends Thread {
                                 } else {
                                     System.out.println("Inserted key" + command.getKey());
                                 }
+                                break;
                         }
                         if(command.getOrigin() == config.getHostIdentifier()) { // IF THE COMMAND IS FROM MYSELF NOTIFY SO THAT COMMANDS CONTINUE TO EXECUTE
                             //myCommands.get(command).recieveCommandFromMyself();
@@ -130,6 +131,29 @@ public class ServerNode extends Thread {
                             }
                         }
                     } else {
+                        DelayedServerMessage m;
+                        switch(command.getType()){
+                            case Command.GET_COMMAND:
+
+                                break;
+                            case Command.DELETE_COMMAND:
+                                myTable.remove(command.getKey());
+                                System.out.println("Key " + command.getKey() + " deleted");
+                                break;
+                            case Command.INSERT_COMMAND:
+                                myTable.put(command.getKey(), new ServerValue(command.getValue(), timestamp));
+                                System.out.println("Inserted key" + command.getKey());
+                                break;
+                            case Command.UPDATE_COMMAND:
+                                ServerValue sv = myTable.get(command.getKey());
+                                myTable.put(command.getKey(), new ServerValue(command.getValue(), timestamp));
+                                if(sv != null){
+                                    System.out.println("Key " + command.getKey() + " changed from " + sv.getValue() + " to " + command.getValue());
+                                } else {
+                                    System.out.println("Inserted key" + command.getKey());
+                                }
+                                break;
+                        }
 
                     }
 
