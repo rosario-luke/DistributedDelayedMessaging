@@ -25,6 +25,10 @@ public class DelayedServerMessage implements Delayed {
 		return command;
 	}
 
+    public void setResponse(Response r){
+        response =r ;
+    }
+
     public String getMessage(){
         if(response == null){
             return command.toString();
