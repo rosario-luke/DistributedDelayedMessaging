@@ -1,7 +1,7 @@
 /**
  * Created by Lucas Rosario on 3/5/2015.
  */
-public class ServerValue {
+public class ServerValue  implements java.io.Serializable {
     private int value;
     private long timestamp;
 

@@ -153,7 +153,9 @@ public class ServerNode extends Thread {
                             m = generator.GenerateResponseMessageFromCommand(command, command.getValue(),timestamp);
                             break;
                     }
-                    delayQueue.add(m);
+                    if(command.getOrigin() != config.getHostIdentifier()) { // Send Response if Command wasn't from myself
+                        delayQueue.add(m);
+                    }
 
                 }
 
