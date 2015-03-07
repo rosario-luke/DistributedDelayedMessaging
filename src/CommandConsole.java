@@ -148,7 +148,7 @@ public class CommandConsole implements Runnable {
                 System.out.println("Inserted key " + c.getKey());
                 break;
             case Command.UPDATE_COMMAND:
-                System.out.println("Key " + c.getKey() + " changed to " +c.getValue());
+                System.out.println("Key " + c.getKey() + " updated to " +c.getValue());
                 break;
             case Command.DELETE_COMMAND:
                 System.out.println("Key " + c.getKey() + " deleted");
