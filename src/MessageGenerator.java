@@ -34,6 +34,7 @@ public class MessageGenerator {
         } else if (s[0].equals("update")) {
             c = new Command(config.getHostIdentifier(), 4, Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]), uniq);
         }
+        c.setSendTime(System.currentTimeMillis());
 
         //String message = splitMessage[1];
         //char destination = splitMessage[2].charAt(0);
@@ -185,8 +186,7 @@ public class MessageGenerator {
     public DelayedServerMessage GenerateResponseMessageFromCommand(Command c, int value, long timestamp) {
 
         DelayedServerMessage nMessage;
-        // Split up input to get destination
-        // TODO: Implement this message to craft a response
+
 
 
         ServerInfo desInfo = config.findInfoByIdentifier(c.getOrigin());

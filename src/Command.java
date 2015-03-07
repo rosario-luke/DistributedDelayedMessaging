@@ -19,7 +19,7 @@ public class Command {
     private int value;
     private int model;
     private int uniq;
-
+    private long sendTime = 0;
     public Command(char o, int t, int k, int v, int m, long u){
         origin = o;
         type = t;
@@ -29,6 +29,13 @@ public class Command {
         uniq = Integer.parseInt(Long.toString(u).substring(Long.toString(u).length()-4));
     }
 
+    public void setSendTime(long t){
+        sendTime = t;
+    }
+
+    public long getSendTime(){
+        return sendTime;
+    }
     public Command(String encoded){
         encoded = encoded.substring(encoded.indexOf(":") + 1);
         String[] s = encoded.split(",");
