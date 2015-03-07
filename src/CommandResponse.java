@@ -5,6 +5,8 @@ import java.util.ArrayList;
  */
 public class CommandResponse {
 
+
+
     private ArrayList<Response> responseList;
     private int responsesNeeded;
     private Object cv;
@@ -55,5 +57,9 @@ public class CommandResponse {
                 cv.notify();
             }
         }
+    }
+
+    public ArrayList<Response> getResponseList() {
+        return responseList;
     }
 }

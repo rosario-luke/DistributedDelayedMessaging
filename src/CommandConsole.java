@@ -72,10 +72,12 @@ public class CommandConsole implements Runnable {
                             myCommands.put(c, new CommandResponse(c));
                             for (DelayedServerMessage nMessage : mList) {
                                 delayQueue.add(nMessage);
-                                System.out.println("Sent '" + nMessage.getCommand().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
+                                //System.out.println("Sent '" + nMessage.getCommand().toString() + "' to " + nMessage.getServerInfo().getIdentifier() + ", system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
                             }
+                            myCommands.get(mList.get(0).getCommand()).waitForResponses();
+                            printAcknowledgementForCommand(c);
                         }
-                        myCommands.get(mList.get(0).getCommand()).waitForResponses();
+
                     }
                 }
                 _input.close();
@@ -124,6 +126,46 @@ public class CommandConsole implements Runnable {
             t = new Thread(this, threadName);
         }
         t.start();
+    }
+
+    public void printAcknowledgementForCommand(Command c){
+
+        switch(c.getType()){
+            case Command.GET_COMMAND:
+                if(c.getModel() == Command.LINEARIZABLE_MODEL){
+                    System.out.println("get("+ c.getKey() + ") = " + myTable.get(c.getKey()).getValue());
+                } else {
+                    Response best = analyzeGetResponses(myCommands.get(c).getResponseList());
+                    System.out.println("get(" + c.getKey() + ") = (" + best.getValue() + ", " + best.getTimestamp() + ") accepted");
+                    for(Response r : myCommands.get(c).getResponseList()){
+                        if(!r.equals(best)){
+                            System.out.println("get(" + c.getKey() + ") = (" + r.getValue() + ", " + r.getTimestamp() + ") not accepted");
+                        }
+                    }
+                }
+                break;
+            case Command.INSERT_COMMAND:
+                System.out.println("Inserted key " + c.getKey());
+                break;
+            case Command.UPDATE_COMMAND:
+                System.out.println("Key " + c.getKey() + " changed to " +c.getValue());
+                break;
+            case Command.DELETE_COMMAND:
+                System.out.println("Key " + c.getKey() + " deleted");
+                break;
+
+        }
+
+    }
+
+    public Response analyzeGetResponses(ArrayList<Response> responseList){
+        Response bestResponse = responseList.get(0);
+        for(Response r: responseList){
+            if(r.getTimestamp() > bestResponse.getTimestamp()){
+                bestResponse = r;
+            }
+        }
+        return bestResponse;
     }
 
 }

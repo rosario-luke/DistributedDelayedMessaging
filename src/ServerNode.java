@@ -93,29 +93,32 @@ public class ServerNode extends Thread {
             if (fullMessage.startsWith("Command")) { // WE ARE RECIEVING A COMMAND
                 Command command = new Command(fullMessage.split("::")[0]);
                 long timestamp = Long.parseLong(fullMessage.split("::")[1]);
+                boolean fromMyself = command.getOrigin() == config.getHostIdentifier();
 
                 if (command.isLinearOrSequential()) {
                     switch (command.getType()) {
                         case Command.GET_COMMAND:
-                            if (command.getModel() == Command.LINEARIZABLE_MODEL && command.getOrigin() == config.getHostIdentifier()) { // IF THE COMMAND IF FROM MYSELF AND LINEARIZABLE
-                                System.out.println("get(" + command.getKey() + ") = " + myTable.get(command.getKey()).getValue());
-                            }
+                            // No Need To Do Anything
                             break;
                         case Command.DELETE_COMMAND:
                             myTable.remove(command.getKey());
-                            System.out.println("Key " + command.getKey() + " deleted");
+                            if(!fromMyself){System.out.println("Key " + command.getKey() + " deleted");}
                             break;
                         case Command.INSERT_COMMAND:
                             myTable.put(command.getKey(), new ServerValue(command.getValue(), timestamp));
-                            System.out.println("Inserted key" + command.getKey());
+                            if(!fromMyself){System.out.println("Inserted key " + command.getKey());}
                             break;
                         case Command.UPDATE_COMMAND:
                             ServerValue sv = myTable.get(command.getKey());
+                            int prev = 0;
+                            if(sv != null){ prev = sv.getValue();}
                             myTable.put(command.getKey(), new ServerValue(command.getValue(), timestamp));
-                            if (sv != null) {
-                                System.out.println("Key " + command.getKey() + " changed from " + sv.getValue() + " to " + command.getValue());
-                            } else {
-                                System.out.println("Inserted key" + command.getKey());
+                            if(!fromMyself) {
+                                if (sv != null) {
+                                    System.out.println("Key " + command.getKey() + " changed from " + prev + " to " + command.getValue());
+                                } else {
+                                    System.out.println("Inserted key " + command.getKey());
+                                }
                             }
                             break;
                     }
@@ -135,20 +138,22 @@ public class ServerNode extends Thread {
                             break;
                         case Command.DELETE_COMMAND:
                             myTable.remove(command.getKey());
-                            System.out.println("Key " + command.getKey() + " deleted");
+                            if(!fromMyself){System.out.println("Key " + command.getKey() + " deleted");}
                             m = generator.GenerateResponseMessageFromCommand(command,sv.getValue(),sv.getTimestamp());
                             break;
                         case Command.INSERT_COMMAND:
                             myTable.put(command.getKey(), new ServerValue(command.getValue(), timestamp));
-                            System.out.println("Inserted key" + command.getKey());
+                            if(!fromMyself){System.out.println("Inserted key " + command.getKey());}
                             m = generator.GenerateResponseMessageFromCommand(command, command.getValue(),timestamp);
                             break;
                         case Command.UPDATE_COMMAND:
                             myTable.put(command.getKey(), new ServerValue(command.getValue(), timestamp));
-                            if (sv != null) {
-                                System.out.println("Key " + command.getKey() + " changed from " + sv.getValue() + " to " + command.getValue());
-                            } else {
-                                System.out.println("Inserted key" + command.getKey());
+                            if(!fromMyself) {
+                                if (sv != null) {
+                                    System.out.println("Key " + command.getKey() + " changed from " + sv.getValue() + " to " + command.getValue());
+                                } else {
+                                    System.out.println("Inserted key " + command.getKey());
+                                }
                             }
                             m = generator.GenerateResponseMessageFromCommand(command, command.getValue(),timestamp);
                             break;

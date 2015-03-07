@@ -38,4 +38,11 @@ public class Response {
     public long getTimestamp() {
         return timestamp;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(o == null) { return false;}
+        Response ro = (Response) o;
+        return this.value == ro.value && this.timestamp == ro.timestamp && this.getOrigin() == ro.getOrigin();
+    }
 }
