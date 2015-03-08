@@ -49,80 +49,13 @@ public class MessageGenerator {
                 if (desInfo.getIdentifier() == 'S') {
                     continue;
                 }
-           /* ServerInfo desInfo = config
-                    .findInfoByIdentifier(destination);*/
-
-                // Calculate random delay based upon the specific port
-                long randDelay = TimeUnit.MILLISECONDS.convert(
-                        (long) rand.nextInt(desInfo.getPortDelay()),
-                        TimeUnit.SECONDS);
-
-                // Get the delay of the last object to go into the queue
-                // If the start time of that message was before the current
-                // message, then it does not exist in the queue
-                // and the new message delay will be the random delay we
-                // just generated
-                // If the last message still hasn't sent, then we will take
-                // the max of the two delays
-                DelayedServerMessage lastMessage = lastMessages.get(desInfo
-                        .getIdentifier());
-                if (lastMessage == null || lastMessage.getDelay(TimeUnit.MILLISECONDS) < 0) {
-                    nMessage = new DelayedServerMessage(desInfo, c,
-                            randDelay);
-                    lastMessages.put(desInfo.getIdentifier(), nMessage);
-                } else {
-                    if (lastMessage.getDelay(TimeUnit.MILLISECONDS) > randDelay) {
-                        nMessage = new DelayedServerMessage(
-                                desInfo,
-                                c,
-                                lastMessage.getDelay(TimeUnit.MILLISECONDS) + 100);
-                        lastMessages.put(desInfo.getIdentifier(), nMessage);
-                    } else {
-                        nMessage = new DelayedServerMessage(desInfo, c,
-                                randDelay);
-                        lastMessages.put(desInfo.getIdentifier(), nMessage);
-                    }
-                }
-                dList.add(nMessage);
+                dList.add(createMessageWithDelay(desInfo, c));
             }
 
         } else {
             ServerInfo desInfo = config.findInfoByIdentifier('S'); // Get Sequencer Identifier
-           /* ServerInfo desInfo = config
-                    .findInfoByIdentifier(destination);*/
-
-            // Calculate random delay based upon the specific port
-            long randDelay = TimeUnit.MILLISECONDS.convert(
-                    (long) rand.nextInt(desInfo.getPortDelay()),
-                    TimeUnit.SECONDS);
-
-            // Get the delay of the last object to go into the queue
-            // If the start time of that message was before the current
-            // message, then it does not exist in the queue
-            // and the new message delay will be the random delay we
-            // just generated
-            // If the last message still hasn't sent, then we will take
-            // the max of the two delays
-            DelayedServerMessage lastMessage = lastMessages.get(desInfo
-                    .getIdentifier());
-            if (lastMessage == null || lastMessage.getDelay(TimeUnit.MILLISECONDS) < 0) {
-                nMessage = new DelayedServerMessage(desInfo, c,
-                        randDelay);
-                lastMessages.put(desInfo.getIdentifier(), nMessage);
-            } else {
-                if (lastMessage.getDelay(TimeUnit.MILLISECONDS) > randDelay) {
-                    nMessage = new DelayedServerMessage(
-                            desInfo,
-                            c,
-                            lastMessage.getDelay(TimeUnit.MILLISECONDS) + 100);
-                    lastMessages.put(desInfo.getIdentifier(), nMessage);
-                } else {
-                    nMessage = new DelayedServerMessage(desInfo, c,
-                            randDelay);
-                    lastMessages.put(desInfo.getIdentifier(), nMessage);
-                }
-            }
-            if (nMessage.getCommand().getModel() == Command.SEQUENTIALLY_CONSISTENT_MODEL && nMessage.getCommand().getType() == Command.GET_COMMAND) {
+            nMessage = createMessageWithDelay(desInfo, c);
+            if (c.getModel() == Command.SEQUENTIALLY_CONSISTENT_MODEL && c.getType() == Command.GET_COMMAND) {
                 nMessage.setReadSeq(true);
             }
             dList.add(nMessage);
@@ -131,53 +64,16 @@ public class MessageGenerator {
     }
 
     public ArrayList<DelayedServerMessage> GenerateMessageFromCommand(Command c) {
-        DelayedServerMessage nMessage;
-        // Split up input to get destination
 
 
-        //String message = splitMessage[1];
-        //char destination = splitMessage[2].charAt(0);
         ArrayList<DelayedServerMessage> dList = new ArrayList<DelayedServerMessage>();
+
         // Find server info associated with the destination
         Iterator<ServerInfo> it = config.getServerIterator();
         ServerInfo desInfo;
         while (it.hasNext()) {
             desInfo = it.next();
-           /* ServerInfo desInfo = config
-                    .findInfoByIdentifier(destination);*/
-
-            // Calculate random delay based upon the specific port
-            long randDelay = TimeUnit.MILLISECONDS.convert(
-                    (long) rand.nextInt(desInfo.getPortDelay()),
-                    TimeUnit.SECONDS);
-
-            // Get the delay of the last object to go into the queue
-            // If the start time of that message was before the current
-            // message, then it does not exist in the queue
-            // and the new message delay will be the random delay we
-            // just generated
-            // If the last message still hasn't sent, then we will take
-            // the max of the two delays
-            DelayedServerMessage lastMessage = lastMessages.get(desInfo
-                    .getIdentifier());
-            if (lastMessage == null || lastMessage.getDelay(TimeUnit.MILLISECONDS) < 0) {
-                nMessage = new DelayedServerMessage(desInfo, c,
-                        randDelay);
-                lastMessages.put(desInfo.getIdentifier(), nMessage);
-            } else {
-                if (lastMessage.getDelay(TimeUnit.MILLISECONDS) > randDelay) {
-                    nMessage = new DelayedServerMessage(
-                            desInfo,
-                            c,
-                            lastMessage.getDelay(TimeUnit.MILLISECONDS) + 100);
-                    lastMessages.put(desInfo.getIdentifier(), nMessage);
-                } else {
-                    nMessage = new DelayedServerMessage(desInfo, c,
-                            randDelay);
-                    lastMessages.put(desInfo.getIdentifier(), nMessage);
-                }
-            }
-            dList.add(nMessage);
+            dList.add(createMessageWithDelay(desInfo, c));
         }
         return dList;
     }
@@ -185,13 +81,16 @@ public class MessageGenerator {
 
     public DelayedServerMessage GenerateResponseMessageFromCommand(Command c, int value, long timestamp) {
 
-        DelayedServerMessage nMessage;
-
-
-
         ServerInfo desInfo = config.findInfoByIdentifier(c.getOrigin());
+        DelayedServerMessage nMessage = createMessageWithDelay(desInfo, c);
+
+        nMessage.setResponse(new Response(config.getHostIdentifier(), value, timestamp));
+        return nMessage;
+    }
 
 
+    public DelayedServerMessage createMessageWithDelay(ServerInfo desInfo, Command c){
+        DelayedServerMessage nMessage;
         // Calculate random delay based upon the specific port
         long randDelay = TimeUnit.MILLISECONDS.convert(
                 (long) rand.nextInt(desInfo.getPortDelay()),
@@ -223,9 +122,6 @@ public class MessageGenerator {
                 lastMessages.put(desInfo.getIdentifier(), nMessage);
             }
         }
-
-
-        nMessage.setResponse(new Response(config.getHostIdentifier(), value, timestamp));
         return nMessage;
     }
 
