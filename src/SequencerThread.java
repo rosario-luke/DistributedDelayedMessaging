@@ -8,7 +8,8 @@ import java.util.concurrent.DelayQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Lucas Rosario on 3/5/2015.
+ * Thread class for managing the different connections that come in. Takes a socket and starts reading the commands from it
+ * Which then resends that command to all other nodes
  */
 public class SequencerThread implements Runnable{
 

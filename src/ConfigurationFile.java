@@ -1,6 +1,10 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Holds all the information about the current servers running as well as what port
+ * this server is running on, it's name, and the command filename specified
+ */
 public class ConfigurationFile{
 	
 	private ArrayList<ServerInfo> myServers;

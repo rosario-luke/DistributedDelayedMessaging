@@ -1,6 +1,10 @@
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class that is used as the element for our DelayQueue
+ * Holds a command and allows itself to be taken from the DelayQueue when it's delay has passed
+ */
 public class DelayedServerMessage implements Delayed {
 
 	private ServerInfo serverInfo;

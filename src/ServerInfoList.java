@@ -1,6 +1,9 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Container class for the ServerInfo objects
+ */
 public class ServerInfoList{
 	
 	ArrayList<ServerInfo> infoList;

@@ -1,5 +1,5 @@
 /**
- * Created by Lucas Rosario on 3/5/2015.
+ * Class for constructing responses and sending them. Allows for easy management
  */
 public class Response {
 

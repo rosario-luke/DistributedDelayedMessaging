@@ -1,5 +1,5 @@
 /**
- * Created by Lucas Rosario on 2/15/2015.
+ * Main class for storing command information and managing
  */
 public class Command {
         final static int DELETE_COMMAND = 1;

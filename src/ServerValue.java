@@ -1,5 +1,6 @@
 /**
- * Created by Lucas Rosario on 3/5/2015.
+ * Used in the HashTable of Keys and Values
+ * This Object holds both the value and the timestamp of a certain value
  */
 public class ServerValue  implements java.io.Serializable {
     private int value;

@@ -6,7 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.DelayQueue;
 import java.io.*;
 
-
+/**
+ * Main class for launching a Server
+ */
 public class ServerNode extends Thread {
 
     private ConcurrentHashMap<Integer, ServerValue> myTable;
@@ -33,6 +35,11 @@ public class ServerNode extends Thread {
 
     }
 
+    /**
+     *
+     * @param files The configuration and Command File names
+     * @throws Exception Errors found while running the server
+     */
     public void startServer(String[] files) throws Exception {
 
         String file = files[0];
@@ -68,7 +75,7 @@ public class ServerNode extends Thread {
 
             serverSocket = new ServerSocket(config.getHostPort());
             serverSocket.setReuseAddress(true);
-            System.out.println("Server now listening on port" + config.getHostPort());
+            System.out.println("Server running on " + serverSocket.getInetAddress().getHostAddress() + ":" + config.getHostPort());
             while (listening) {
                 handleServerRequest(serverSocket);
             }

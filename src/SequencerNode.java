@@ -10,7 +10,9 @@ import java.util.concurrent.TimeUnit;
 import java.io.*;
 
 
-
+/**
+ * Main class for the Sequencer when implementing a linearizable model
+ */
 public class SequencerNode extends Thread {
 
     public static void main(String[] args) {
@@ -83,23 +85,7 @@ public class SequencerNode extends Thread {
 
     }
 
-    private void handleServerRequest(ServerSocket serverSocket, ConfigurationFile con, MessageGenerator g, DelayQueue<DelayedServerMessage> q) {
-        try {
-            System.out.println("Waiting to accept");
-            Socket socket = serverSocket.accept();
-            BufferedReader _in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String fullMessage = _in.readLine();
-            Command command = new Command(fullMessage.split("::")[0]);
-            long timestamp = command.getTimestamp();
-            int maxDelay = con.findInfoByIdentifier(command.getOrigin()).getPortDelay();
-            System.out.println("Received '" + command.toString() + "' from " + command.getOrigin() + ", Max delay is " + maxDelay + " s, system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
 
-            ArrayList<DelayedServerMessage> messages = g.GenerateMessageFromCommand(command);
-            q.addAll(messages);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 }
 

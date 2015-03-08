@@ -1,5 +1,6 @@
-
-
+/**
+ * This class holds information about a server, including its name, port number, and delay that should be used
+ */
 public class ServerInfo{
 	
 	private char Identifier;

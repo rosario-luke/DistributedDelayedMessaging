@@ -27,6 +27,13 @@ public class CommandConsole implements Runnable {
         myCommands = mC;
     }
 
+
+    /**
+     * Opens file reader and waits until user hits "Enter" to continue
+     * Reads commands in file if a command file is specified
+     * After reading from command file moves on and reads from stdin
+     * Parses and executes commands adding them to the delay queue
+     */
     public void run() {
         Scanner _input = null;
         String inputLine;
@@ -77,6 +84,12 @@ public class CommandConsole implements Runnable {
         t.start();
     }
 
+
+    /**
+     *
+     * @param c - The command to parse
+     *          Prints the specialized acknowledgement string for a command
+     */
     public void printAcknowledgementForCommand(Command c) {
 
         switch (c.getType()) {
@@ -107,6 +120,13 @@ public class CommandConsole implements Runnable {
 
     }
 
+    /**
+     *
+     * @param inputLine - raw input from file or stdin
+     *                  Reads the string and parses the command. Runs the command through
+     *                  a MessageGenerator, then adds all the messages to the Delay Queue
+     *                  The method then blocks until the command has been acknowledged
+     */
     public void handleCommand(String inputLine) {
 
         if(inputLine.contains("Delay")){
@@ -158,6 +178,12 @@ public class CommandConsole implements Runnable {
 
     }
 
+
+    /**
+     *
+     * @param responseList - Holds all the responses for the specified get command
+     * @return - The response with the most recent timestamp
+     */
     public Response analyzeGetResponses(ArrayList<Response> responseList) {
         Response bestResponse = responseList.get(0);
         for (Response r : responseList) {

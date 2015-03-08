@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.Random;
 
 /**
- * Created by Lucas Rosario on 2/12/2015.
+ * Class to help generate messages/commands to send to other servers
  */
 public class MessageGenerator {
     private ConfigurationFile config;
