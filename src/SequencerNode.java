@@ -90,7 +90,7 @@ public class SequencerNode extends Thread {
             BufferedReader _in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String fullMessage = _in.readLine();
             Command command = new Command(fullMessage.split("::")[0]);
-            long timestamp = Long.parseLong(fullMessage.split("::")[1]);
+            long timestamp = command.getTimestamp();
             int maxDelay = con.findInfoByIdentifier(command.getOrigin()).getPortDelay();
             System.out.println("Received '" + command.toString() + "' from " + command.getOrigin() + ", Max delay is " + maxDelay + " s, system time is " + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()));
 

@@ -92,7 +92,7 @@ public class ServerNode extends Thread {
             String fullMessage = _in.readLine();
             if (fullMessage.startsWith("Command")) { // WE ARE RECIEVING A COMMAND
                 Command command = new Command(fullMessage.split("::")[0]);
-                long timestamp = Long.parseLong(fullMessage.split("::")[1]);
+                long timestamp = command.getTimestamp();
                 boolean fromMyself = command.getOrigin() == config.getHostIdentifier();
 
                 if (command.isLinearOrSequential()) {
