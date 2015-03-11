@@ -57,6 +57,7 @@ public class CommandConsole implements Runnable {
             if (fileFound) {
                 while (_input.hasNext()) {
                     inputLine = _input.nextLine();
+                    System.out.println(inputLine);
                     handleCommand(inputLine);
 
                 }
@@ -136,7 +137,7 @@ public class CommandConsole implements Runnable {
      */
     public void handleCommand(String inputLine) {
 
-        if(inputLine.contains("Delay")){
+        if(inputLine.toLowerCase().contains("delay")){
             int delay = Integer.parseInt(inputLine.split(" ")[1]);
             try {
                 Thread.sleep(delay * 1000);
@@ -145,9 +146,9 @@ public class CommandConsole implements Runnable {
             }
             return;
 
-        } else if(inputLine.toLowerCase().contains("Search")){
+        } else if(inputLine.toLowerCase().contains("search")){
             inputLine = inputLine.toLowerCase();
-        } else if(inputLine.toLowerCase().contains("Show-all")){
+        } else if(inputLine.toLowerCase().contains("show-all")){
             for(Map.Entry<Integer, ServerValue> ksv : myTable.entrySet()){
                 System.out.println("Value (" + ksv.getKey() + ") = " + ksv.getValue().getValue());
             }
@@ -169,6 +170,7 @@ public class CommandConsole implements Runnable {
             } else {
                 System.out.println("get(" + c.getKey() + ") occurred but value did not exist");
             }
+            return;
         } else {
             Command c = mList.get(0).getCommand();
             myCommands.put(c, new CommandResponse(c, config.getNumberOfServers()));
