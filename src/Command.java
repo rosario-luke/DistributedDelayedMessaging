@@ -6,6 +6,7 @@ public class Command {
         final static int GET_COMMAND = 2;
         final static int INSERT_COMMAND  = 3;
         final static int UPDATE_COMMAND = 4;
+        final static int SEARCH_COMMAND = 5;
         final static int LINEARIZABLE_MODEL = 1;
         final static int SEQUENTIALLY_CONSISTENT_MODEL = 2;
         final static int EVENTUAL_1_MODEL = 3; // W = 1, R = 1
@@ -20,6 +21,7 @@ public class Command {
         private int model;
         private int uniq;
         private long sendTime = 0;
+        private boolean isSearchCommand = false;
         public Command(char o, int t, int k, int v, int m, long time){
             origin = o;
             type = t;
@@ -68,6 +70,9 @@ public class Command {
         public int getModel() {
             return model;
         }
+
+        public boolean isForSearch(){ return isSearchCommand;}
+        public void setSearchCommand(boolean b){ isSearchCommand = b;}
 
         boolean isLinearOrSequential() {
             return getModel() == SEQUENTIALLY_CONSISTENT_MODEL || getModel() == LINEARIZABLE_MODEL;

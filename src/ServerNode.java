@@ -128,6 +128,17 @@ public class ServerNode extends Thread {
                                 }
                             }
                             break;
+                        case Command.SEARCH_COMMAND:
+                            ServerValue curValue = myTable.get(command.getKey());
+                            DelayedServerMessage res;
+                            if(curValue != null){
+                                res = generator.GenerateResponseMessageFromCommand(command, curValue.getValue(), curValue.getTimestamp());
+                            } else {
+                                res= generator.GenerateResponseMessageFromCommand(command, Integer.MIN_VALUE, -1);
+                            }
+                            delayQueue.add(res);
+                            break;
+
                     }
                     if (command.getOrigin() == config.getHostIdentifier()) { // IF THE COMMAND IS FROM MYSELF NOTIFY SO THAT COMMANDS CONTINUE TO EXECUTE
                         myCommands.get(command).recieveCommandFromMyself();
@@ -163,6 +174,16 @@ public class ServerNode extends Thread {
                                 }
                             }
                             m = generator.GenerateResponseMessageFromCommand(command, command.getValue(),timestamp);
+                            break;
+                        case Command.SEARCH_COMMAND:
+                            ServerValue curValue = myTable.get(command.getKey());
+                            DelayedServerMessage res;
+                            if(curValue != null){
+                                res = generator.GenerateResponseMessageFromCommand(command, curValue.getValue(), curValue.getTimestamp());
+                            } else {
+                                res= generator.GenerateResponseMessageFromCommand(command, Integer.MIN_VALUE, -1);
+                            }
+                            delayQueue.add(res);
                             break;
                     }
                     if(command.getOrigin() != config.getHostIdentifier()) { // Send Response if Command wasn't from myself

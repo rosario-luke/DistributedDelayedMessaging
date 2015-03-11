@@ -40,6 +40,10 @@ public class ConfigurationFile{
 		return null;
 	}
 
+    public int getNumberOfServers(){
+        return myServers.size();
+    }
+
     public String getCommandFile(){ return commandFile;}
     public boolean hasCommandFile(){ return commandFile != null;}
 	

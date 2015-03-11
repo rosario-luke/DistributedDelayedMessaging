@@ -33,6 +33,8 @@ public class MessageGenerator {
             c = new Command(config.getHostIdentifier(), 3, Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]), uniq);
         } else if (s[0].equals("update")) {
             c = new Command(config.getHostIdentifier(), 4, Integer.parseInt(s[1]), Integer.parseInt(s[2]), Integer.parseInt(s[3]), uniq);
+        } else if(s[0].equals("search")){
+             c = new Command(config.getHostIdentifier(), Command.SEARCH_COMMAND, Integer.parseInt(s[1]), 0, Integer.parseInt(s[2]), uniq);
         }
 
 

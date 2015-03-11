@@ -11,7 +11,7 @@ public class CommandResponse {
     private int responsesNeeded;
     private Object cv;
     private Command command;
-    public CommandResponse(Command c){
+    public CommandResponse(Command c, int maxNumServers){
         responseList = new ArrayList<Response>();
         command = c;
         cv = new Object();
@@ -28,6 +28,9 @@ public class CommandResponse {
             case Command.EVENTUAL_2_MODEL:
                 responsesNeeded = 2;
                 break;
+        }
+        if(c.getType() == Command.SEARCH_COMMAND){
+            responsesNeeded = maxNumServers-1; // TAKE OUT 1 FOR THE SEQUENCER
         }
     }
 

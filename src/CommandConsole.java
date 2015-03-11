@@ -115,6 +115,13 @@ public class CommandConsole implements Runnable {
             case Command.DELETE_COMMAND:
                 System.out.println("Key " + c.getKey() + " deleted");
                 break;
+            case Command.SEARCH_COMMAND:
+                System.out.println("Key " + c.getKey() + " found in servers: ");
+                for(Response r : myCommands.get(c).getResponseList()){
+                    if(r.getValue() != Integer.MIN_VALUE){
+                        System.out.println("Server " + r.getOrigin() + " had key");
+                    }
+                }
 
         }
 
@@ -168,7 +175,7 @@ public class CommandConsole implements Runnable {
             }
         } else {
             Command c = mList.get(0).getCommand();
-            myCommands.put(c, new CommandResponse(c));
+            myCommands.put(c, new CommandResponse(c, config.getNumberOfServers()));
             for (DelayedServerMessage nMessage : mList) {
                 delayQueue.add(nMessage);
             }
