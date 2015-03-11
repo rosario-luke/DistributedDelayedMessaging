@@ -177,16 +177,16 @@ public class ServerNode extends Thread {
                             break;
                         case Command.SEARCH_COMMAND:
                             ServerValue curValue = myTable.get(command.getKey());
-                            DelayedServerMessage res;
+
                             if(curValue != null){
-                                res = generator.GenerateResponseMessageFromCommand(command, curValue.getValue(), curValue.getTimestamp());
+                                m = generator.GenerateResponseMessageFromCommand(command, curValue.getValue(), curValue.getTimestamp());
                             } else {
-                                res= generator.GenerateResponseMessageFromCommand(command, Integer.MIN_VALUE, -1);
+                                m = generator.GenerateResponseMessageFromCommand(command, Integer.MIN_VALUE, -1);
                             }
-                            delayQueue.add(res);
+
                             break;
                     }
-                    if(command.getOrigin() != config.getHostIdentifier()) { // Send Response if Command wasn't from myself
+                    if(command.getOrigin() != config.getHostIdentifier() || command.getType() == Command.SEARCH_COMMAND) { // Send Response if Command wasn't from myself
                         delayQueue.add(m);
                     }
 

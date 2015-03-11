@@ -143,19 +143,15 @@ public class CommandConsole implements Runnable {
             } catch(InterruptedException e){
                 System.out.println("Error occurred while delaying next command");
             }
+            return;
 
-        } else if(inputLine.contains("Search")){
-            int key = Integer.parseInt(inputLine.split(" ")[1]);
-            ServerValue v = myTable.get(key);
-            if(v == null) {
-                System.out.println("Value for " + key + " is not defined");
-            } else {
-                System.out.println("Value (" + key + ") = " + v.getValue());
-            }
-        } else if(inputLine.contains("Show-all")){
+        } else if(inputLine.toLowerCase().contains("Search")){
+            inputLine = inputLine.toLowerCase();
+        } else if(inputLine.toLowerCase().contains("Show-all")){
             for(Map.Entry<Integer, ServerValue> ksv : myTable.entrySet()){
                 System.out.println("Value (" + ksv.getKey() + ") = " + ksv.getValue().getValue());
             }
+            return;
         }
 
         ArrayList<DelayedServerMessage> mList;
