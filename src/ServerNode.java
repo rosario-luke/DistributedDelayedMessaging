@@ -18,6 +18,8 @@ public class ServerNode extends Thread {
     private HashMap<Character, DelayedServerMessage> lastMessages;
     private Random rand;
     private DelayQueue<DelayedServerMessage> delayQueue;
+    private boolean hasLaunchedRepair;
+    private RepairThread repairThread;
     public static void main(String[] args) {
 
         try {
@@ -50,7 +52,7 @@ public class ServerNode extends Thread {
         ServerSocket serverSocket = null;
         boolean listening = true;
         config = ConfigurationManager.createConfig(file, commands);
-
+        hasLaunchedRepair = false;
         try {
 
 
@@ -72,6 +74,9 @@ public class ServerNode extends Thread {
             // Setup clientNode and run
             ClientNode clientNode = new ClientNode(delayQueue, config, "ClientNode");
             clientNode.start();
+
+            // Create Repair thread but don't run
+            repairThread = new RepairThread(config, generator, myTable, myCommands, delayQueue);
 
             serverSocket = new ServerSocket(config.getHostPort());
             serverSocket.setReuseAddress(true);
@@ -144,6 +149,10 @@ public class ServerNode extends Thread {
                         myCommands.get(command).recieveCommandFromMyself();
                     }
                 } else {
+                    if(!hasLaunchedRepair){
+                        repairThread.start();
+                        hasLaunchedRepair = true;
+                    }
                     DelayedServerMessage m = null;
                     ServerValue sv = myTable.get(command.getKey());
                     switch (command.getType()) {
@@ -172,6 +181,8 @@ public class ServerNode extends Thread {
                                 } else {
                                     System.out.println("Inserted key " + command.getKey());
                                 }
+                            } else {
+                                System.out.println("Updated key " + command.getKey() + " to " + command.getValue() + " but not acknowledge");
                             }
                             m = generator.GenerateResponseMessageFromCommand(command, command.getValue(),timestamp);
                             break;
@@ -199,6 +210,7 @@ public class ServerNode extends Thread {
                 Command command = new Command(fullMessage.split("::")[1]);
 
                 CommandResponse commandRes = myCommands.get(command);
+                //System.out.println("Recieved response " + response.toString() + " for commmand " + command.toString());
                 commandRes.addResponse(response);
 
             }

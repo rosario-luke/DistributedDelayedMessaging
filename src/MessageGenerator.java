@@ -107,7 +107,7 @@ public class MessageGenerator {
         // the max of the two delays
         DelayedServerMessage lastMessage = lastMessages.get(desInfo
                 .getIdentifier());
-        if (lastMessage == null || lastMessage.getDelay(TimeUnit.MILLISECONDS) < 0) {
+        if (lastMessage == null || lastMessage.getDelay(TimeUnit.MILLISECONDS) < 0 || c.getType() == Command.SEARCH_COMMAND) {
             nMessage = new DelayedServerMessage(desInfo, c,
                     randDelay);
             lastMessages.put(desInfo.getIdentifier(), nMessage);
@@ -116,7 +116,7 @@ public class MessageGenerator {
                 nMessage = new DelayedServerMessage(
                         desInfo,
                         c,
-                        lastMessage.getDelay(TimeUnit.MILLISECONDS) + 100);
+                        lastMessage.getDelay(TimeUnit.MILLISECONDS) + 10);
                 lastMessages.put(desInfo.getIdentifier(), nMessage);
             } else {
                 nMessage = new DelayedServerMessage(desInfo, c,

@@ -98,7 +98,7 @@ public class CommandConsole implements Runnable {
                 if (c.getModel() == Command.LINEARIZABLE_MODEL) {
                     System.out.println("get(" + c.getKey() + ") = " + myTable.get(c.getKey()).getValue());
                 } else {
-                    Response best = analyzeGetResponses(myCommands.get(c).getResponseList());
+                    Response best = analyzeGetResponses(myCommands.get(c).getResponseList(), new Response(c.getOrigin(), myTable.get(c.getKey()).getValue(), myTable.get(c.getKey()).getTimestamp()));
                     System.out.println("get(" + c.getKey() + ") = (" + best.getValue() + ", " + best.getTimestamp() + ") accepted");
                     for (Response r : myCommands.get(c).getResponseList()) {
                         if (!r.equals(best)) {
@@ -108,13 +108,13 @@ public class CommandConsole implements Runnable {
                 }
                 break;
             case Command.INSERT_COMMAND:
-                System.out.println("Inserted key " + c.getKey());
+                System.out.println("Inserted key " + c.getKey() + " acknowledged");
                 break;
             case Command.UPDATE_COMMAND:
-                System.out.println("Key " + c.getKey() + " updated to " + c.getValue());
+                System.out.println("Key " + c.getKey() + " updated to " + c.getValue() + " acknowledged");
                 break;
             case Command.DELETE_COMMAND:
-                System.out.println("Key " + c.getKey() + " deleted");
+                System.out.println("Key " + c.getKey() + " deleted" + " acknowledged");
                 break;
             case Command.SEARCH_COMMAND:
                 System.out.println("Key " + c.getKey() + " found in servers: ");
@@ -189,9 +189,10 @@ public class CommandConsole implements Runnable {
      * @param responseList - Holds all the responses for the specified get command
      * @return - The response with the most recent timestamp
      */
-    public Response analyzeGetResponses(ArrayList<Response> responseList) {
-        Response bestResponse = responseList.get(0);
+    static Response analyzeGetResponses(ArrayList<Response> responseList, Response br) {
+        Response bestResponse = br;
         for (Response r : responseList) {
+            //System.out.println("Analyzing response: " +  r.toString());
             if (r.getTimestamp() > bestResponse.getTimestamp()) {
                 bestResponse = r;
             }

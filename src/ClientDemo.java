@@ -6,7 +6,7 @@ public class ClientDemo {
 		try {
 			new ClientDemo().startClient();
 		} catch (Exception e) {
-			System.out.println("Something falied: " + e.getMessage());
+			System.out.println("Something failed: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
